@@ -13,6 +13,12 @@ def main():
     print('*****************************')
     
     fix_seed(args.random_seed)
+
+    decoder = Decoder(args)
+
+    print("setup data loader ...")
+    # dataloader = setup_data_loader(args)
+    print_now()
     
     # print("OPENAI_API_KEY:")
     # print(os.getenv("OPENAI_API_KEY"))
@@ -28,7 +34,7 @@ def parse_arguments():
     parser.add_argument("--random_seed", type=int, default=1, help="random seed")
 
     parser.add_argument(
-        "--dataset", type=str, default="logiqa", choices=["logiqa", "reclor"], help="dataset used for experiment"
+        "--dataset", type=str, default="reclor", choices=["logiqa", "reclor"], help="dataset used for experiment"
     )
 
     parser.add_argument(
@@ -36,7 +42,7 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        "--api_key", type=str, default="api_key1", choices=["api_key1", "api_key2", "api_key3"], help="api key used for experiment"
+        "--api_key", type=str, default="", help="api key used for experiment"
     )
 
     parser.add_argument("--max_num_worker", type=int, default=3, help="maximum number of workers for dataloader")
@@ -56,6 +62,41 @@ def parse_arguments():
     parser.add_argument(
         "--api_time_interval", type=float, default=1.0, help=""
     )
+
+    parser.add_argument(
+        "--max_length", type=int, default=128, help="maximum length of output tokens by model for reasoning extraction"
+    )
+
+    args = parser.parse_args()
+
+    if args.dataset == "reclor":
+        args.dataset_path = "./datasets/reclor/val.json"
+        args.direct_answer_trigger = "\nTherefore, among A through D, the answer is "
+    elif args.dataset == "logiqa_mrc":
+        args.dataset_path = "./datasets/LogiQA2.0-main/logiqa/DATA/test.txt"
+        args.direct_answer_trigger = "\nTherefore, among A through D, the answer is "
+    else:
+        raise ValueError("dataset is not properly defined ...")
+    trigger = args.direct_answer_trigger.replace("\nTherefore, ", "")
+    args.direct_answer_trigger_for_zeroshot = trigger[0].upper() + trigger[1:]
+    args.direct_answer_trigger_for_zeroshot_cot = args.direct_answer_trigger
+
+    args.direct_answer_trigger_for_fewshot = "The answer is"
+    # if (args.dataset in ["multiarith", "gsm8k", "svamp", "singleeq", "addsub"]):
+    #     args.direct_answer_trigger_for_fewshot = "The answer is "
+    # elif (args.dataset in ["commonsensqa", "aqua"]):
+    #     args.direct_answer_trigger_for_fewshot = "\nTherefore, among A through E, the answer is "
+    # elif (args.dataset in ["strategyqa"]):
+    #     args.direct_answer_trigger_for_fewshot = "\nTherefore, the answer (Yes or No) is"
+    # elif (args.dataset in ["logiqa","reclor"]):
+    #     args.direct_answer_trigger_for_fewshot = "\nTherefore, among A through D, the answer is "
+    # elif (args.dataset in ['bigbench_date']):
+    #     args.direct_answer_trigger_for_fewshot = "\nTherefore, among A through F, the answer is "
+
+    if args.cot_trigger_no == 1:
+        args.cot_trigger = "Let's think step by step."
+
+    return args
 
 if __name__ == "__main__":
     main()
