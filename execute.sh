@@ -1,1 +1,1 @@
-python3 main.py --api_log_file_name="zero_shot_cot.cot_trigger_no_33.qwen1.8b.aqua.128.txt" --dataset="reclor" --max_num_worker=1 --model="qwen2.5-72b-instruct" --method="zero_shot" --cot_trigger_no=33 --max_length=128
+python3 main.py --api_log_file_name="zero_shot_cot.cot_trigger_no_33.qwen1.8b.aqua.128.txt" --dataset="reclor" --max_num_worker=1 --model="qwen2.5-72b-instruct" --method="zero_shot" --cot_trigger_no=33 --max_length=16384 --llm_service="aliyun" --api_key sk-9e670332f0ab4e2aa5b950cf6a7282d8
